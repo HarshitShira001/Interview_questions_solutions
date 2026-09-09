@@ -1,0 +1,63 @@
+#include <bits/stdc++.h>
+#include <iostream>
+using namespace std;
+int ans = 0;
+void solve(int mat[][5],int row,int col,int rowsafe,int coins,bool usedbomb){
+    if(row < 0 || col < 0 || col >= 5){
+        ans = max(ans,coins);
+        return;
+    }
+
+    if(mat[row][col] == 1 || mat[row][col] == 0){
+        int newcoins = coins;
+        if(mat[row][col] == 1){
+            newcoins++;
+        }
+        if(usedbomb == true){
+            rowsafe--;
+        }
+        solve(mat,row-1,col,rowsafe,newcoins,usedbomb);
+        solve(mat,row-1,col+1,rowsafe,newcoins,usedbomb);
+        solve(mat,row-1,col-1,rowsafe,newcoins,usedbomb);
+    }
+    else if(mat[row][col] == 2){
+        if(usedbomb == true && rowsafe <= 0){
+            ans = max(ans,coins);
+            return;
+        }
+        else if(usedbomb == true && rowsafe > 0){
+            rowsafe--;
+        solve(mat,row-1,col,rowsafe,coins,usedbomb);
+        solve(mat,row-1,col+1,rowsafe,coins,usedbomb);
+        solve(mat,row-1,col-1,rowsafe,coins,usedbomb);
+        }
+        else if(usedbomb == false){
+            usedbomb = true;
+            rowsafe = 4;
+        solve(mat,row-1,col,rowsafe,coins,usedbomb);
+        solve(mat,row-1,col+1,rowsafe,coins,usedbomb);
+        solve(mat,row-1,col-1,rowsafe,coins,usedbomb);
+        }
+    }
+}
+int main() {
+    // Write C++ code here
+    int rows;
+    cin >> rows;
+    int mat[rows][5];
+    for(int i = 0;i < rows;i++){
+        for(int j = 0;j < 5;j++){
+            int x;
+            cin >> x;
+            mat[i][j] = x;
+        }
+    }
+    int coins = 0;
+    bool usedbomb = false;
+    int rowsafe = 0;
+    solve(mat,rows-1,1,rowsafe,coins,usedbomb);
+    solve(mat,rows-1,2,rowsafe,coins,usedbomb);
+    solve(mat,rows-1,3,rowsafe,coins,usedbomb);
+    cout << ans;
+    return 0;
+}
