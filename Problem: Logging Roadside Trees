@@ -1,0 +1,103 @@
+/*
+We have a road that is a line of integer positions (0,1,...,n). There may be up to one tree on the left and up to one tree on the right at each integer position (i in {1,...,n-1}). Each tree has an integer height (h in [1,1000]). The total number of trees is (T).
+
+A robot starts at position (0). Its job is to cut every tree and deliver them all at position (n). Rules:
+
+* Cutting a tree costs (1) (so cutting all trees costs (T) in total; this part is fixed).
+* Moving the robot a distance (d) along the line costs (d).
+* The robot can carry any number of trees, but the stack of carried trees must always be in non-increasing order from bottom to top. Equivalently: every time the robot picks up a new tree, its height must be less equal to the height of the tree currently on top of the stack (if any). This permits equal heights.
+* The robot must finish at position (n) after having cut and delivered all trees.
+11
+Goal: find the minimum total cost = (movement cost) + (cutting cost (=T)).
+
+Input Format:
+n -> length of road (5 <= n <= 1000)
+left[i] -> n length array of left side tree heights
+right[i] -> n length array of right side tree heights
+
+E.g.
+Input:
+1
+5
+0 3 2 1 0
+0 3 2 1 0
+
+Output:
+#1 11
+*/
+
+using namespace std;
+#include <bits/stdc++.h>
+int n;
+int dp[1001][1001];
+int solve(vector<vector<int>> &trees,int treeval,int pos){
+    if(treeval == 0){
+        return n-pos;
+    }
+    if(dp[treeval][pos] != -1){
+        return dp[treeval][pos];
+    }
+    if(trees[treeval].empty()){
+        return solve(trees,treeval-1,pos);
+    }
+
+    vector<int> indexvec = trees[treeval];
+    int size = indexvec.size();
+    int l = indexvec.front();
+    int r = indexvec.back();
+    int cost = INT_MAX;
+    if(pos < l){
+        int dist = r-pos;
+        int npos = r;
+        int ans = dist + size + solve(trees,treeval-1,npos);
+        cost = min(cost,ans);
+    }
+    else if(pos > r){
+        int dist = pos-l;
+        int npos = l;
+        int ans = dist + size + solve(trees,treeval-1,npos);
+        cost = min(cost,ans);
+    }
+    else{
+        int dist1 = pos-l + r-l;
+        int npos1 = r;
+        int ans1 = dist1 + size + solve(trees,treeval-1,npos1);
+        int dist2 = r-pos + r-l;
+        int npos2 = l;
+        int ans2 = dist2 + size + solve(trees,treeval-1,npos2);
+        cost = min(cost,min(ans1,ans2));
+    }
+    return dp[treeval][pos] = cost;
+}
+int main(){
+    int T;
+    cin >> T;
+    for(int t = 0;t < T;t++){
+        memset(dp,-1,sizeof(dp));
+        cin >> n;
+        vector<vector<int>> trees(1001);
+        for(int i = 0;i < n;i++){
+            int a;
+            cin >> a;
+            if(a > 0){
+                trees[a].push_back(i);
+            }
+        }
+        for(int i = 0;i < n;i++){
+            int a;
+            cin >> a;
+            if(a > 0){
+                trees[a].push_back(i);
+            }
+        }
+        for(int i = 0;i < 1001;i++){
+            if(trees[i].empty()){
+                continue;
+            }
+            sort(trees[i].begin(),trees[i].end());
+        }
+        int ans = solve(trees,1000,0);
+        cout << '#' << t+1 << " " << ans;
+        return 0;
+    }
+}
