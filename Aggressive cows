@@ -1,0 +1,39 @@
+class Solution {
+  public:
+    bool ispossible(int mid,vector<int> &arr,int k,int n){
+    int pos = arr[0];
+    int cows = 1;
+    for(int i = 1;i < n;i++){
+        if(arr[i]-pos >= mid){
+            pos = arr[i];
+            cows++;
+        }
+    }
+    if(cows < k){
+        return false;
+    }
+    return true;
+}
+    int aggressiveCows(vector<int> &arr, int k) {
+        // code here
+    int n = arr.size();
+    sort(arr.begin(),arr.end());
+    int start = INT_MAX;
+    for(int i = 1;i < n;i++){
+        start = min(start,arr[i]-arr[i-1]);
+    }
+    int end = arr[n-1]-arr[0];
+    int ans = -1;
+    while(start <= end){
+        int mid = start + (end-start)/2;
+        if(ispossible(mid,arr,k,n)){
+            ans = mid;
+            start = mid+1;
+        }
+        else{
+            end = mid-1;
+        }
+    }
+    return ans;
+    }
+};
