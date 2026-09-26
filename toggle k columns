@@ -1,0 +1,66 @@
+/* A binary matrix of nxm was given, you have to toggle any column k number of times so that you can get the maximum 
+number of rows having all 1’s.
+
+for eg, n=3, m=3,
+
+            1 0 0
+
+            1 0 1
+
+            1 0 0
+
+if k=2, then we will toggle column 2 and 3 once and we will get rows 1 and 3 with 1 1 1 and 1 1 1 i.e. all 1’s so 
+answer is 2 as there are 2 rows with all 1’s.
+
+if k=3, then we will toggle column 2 thrice and we will get row 2 with 1 1 1 i.e. all 1’s so answer is 1 as there 
+is 1 row with all 1’s.
+*/
+
+#include <cmath>
+#include <cstdio>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+#include <unordered_map>
+using namespace std;
+
+
+int main() {
+    /* Enter your code here. Read input from STDIN. Print output to STDOUT */
+    int n,m,k;
+    cin >> n;
+    cin >> m;
+    cin >> k;
+    vector<vector<int>> arr(n,vector<int>(m,0));
+    for(int i = 0;i < n;i++){
+        for(int j = 0;j < m;j++){
+            int x;
+            cin >> x;
+            arr[i][j] = x;
+        }
+    }
+    unordered_map<string,int> mp;
+    for(int row = 0;row < n;row++){
+        string temp = "";
+        for(int col = 0;col < m;col++){
+            temp += arr[row][col] + '0';
+        }
+        mp[temp]++;
+    }    
+    int ans = 0;
+    for(auto it:mp){
+        string temp = it.first;
+        int count = it.second;
+        int countzero = 0;
+        for(int j = 0;j < temp.length();j++){
+            if(temp[j] == '0'){
+                countzero++;
+            }
+        }
+        if((countzero <= k && (k-countzero)%2 == 0)){
+            ans = max(ans,count);
+        }
+    }
+    cout << ans;
+    return 0;
+}
