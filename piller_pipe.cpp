@@ -68,3 +68,35 @@ int main()
     }   
 }
 
+
+//solution 2
+class Solution {
+public:
+    int dp[21][100001];
+    int solve(int index,int diff,vector<int> &rods){
+        int n = rods.size();
+        if(index >= n){ 
+            if(diff == 0){
+                return 0;
+            }
+            else{
+                return INT_MIN;
+            }
+        }
+        if(dp[index][diff+5000] != -1){
+            return dp[index][diff+5000];
+        }
+        int nottaken = solve(index+1,diff,rods);
+        int leftpillar = rods[index]+ solve(index+1,diff+rods[index],rods);
+        int rightpillar = rods[index] + solve(index+1,diff-rods[index],rods);
+        int ans = max({nottaken,leftpillar,rightpillar});
+        return dp[index][diff+5000] = ans;
+    }
+    int tallestBillboard(vector<int>& rods) {
+        int n = rods.size();
+        int diff = 0;
+        int index = 0;
+        memset(dp,-1,sizeof(dp));
+        return solve(index,diff,rods)/2;
+    }
+};
